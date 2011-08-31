@@ -1,4 +1,3 @@
-Sub-Spec-URI-http-*
-Sub-Spec-URI-https-*
+Sub-Spec-DepChecker-*
 .build
 *~
