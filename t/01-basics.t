@@ -6,12 +6,12 @@ use warnings;
 use Test::More 0.96;
 
 use Probe::Perl;
-use Sub::Spec::Clause::deps;
+use Sub::Spec::DepChecker qw(check_deps);
 
-sub test_deps {
+sub test_check_deps {
     my %args = @_;
     my $name = $args{name};
-    my $res = Sub::Spec::Clause::deps::check($args{deps});
+    my $res = check_deps($args{deps});
     if ($args{met}) {
         ok(!$res, "$name met") or diag($res);
     } else {
@@ -20,11 +20,11 @@ sub test_deps {
 }
 
 sub deps_met {
-    test_deps(deps=>$_[0], name=>$_[1], met=>1);
+    test_check_deps(deps=>$_[0], name=>$_[1], met=>1);
 }
 
 sub deps_unmet {
-    test_deps(deps=>$_[0], name=>$_[1], met=>0);
+    test_check_deps(deps=>$_[0], name=>$_[1], met=>0);
 }
 
 deps_met   {}, "empty deps";
@@ -36,9 +36,9 @@ deps_unmet {mod=>"Test::Morexxx"}, "mod 2";
 
 deps_met   {sub=>"Test::More::is"}, "sub 1";
 deps_unmet {sub=>"Test::Morexxx::is"}, "sub 2";
-deps_met   {sub=>"::test_deps"}, "sub: implicit main 1a";
+deps_met   {sub=>"::test_check_deps"}, "sub: implicit main 1a";
 deps_unmet {sub=>"::xxx"}, "sub: implicit main 1b";
-deps_met   {sub=>"test_deps"}, "sub: implicit main 2a";
+deps_met   {sub=>"test_check_deps"}, "sub: implicit main 2a";
 deps_unmet {sub=>"xxx"}, "sub: implicit main 2b";
 
 {
