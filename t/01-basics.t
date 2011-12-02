@@ -5,7 +5,6 @@ use strict;
 use warnings;
 use Test::More 0.96;
 
-use Probe::Perl;
 use Sub::Spec::DepChecker qw(check_deps);
 
 sub test_check_deps {
@@ -53,14 +52,12 @@ deps_unmet {sub=>"xxx"}, "sub: implicit main 2b";
 deps_met   {code=>sub{1}}, "sub 1";
 deps_unmet {code=>sub{ }}, "sub 2";
 
-my $pp = Probe::Perl->new;
-my $perl_path = $pp->find_perl_interpreter;
-deps_met   {exec=>$perl_path}, "exec 1";
-deps_unmet {exec=>$perl_path."xxx"}, "exec 2";
+deps_met   {exec=>$^X}, "exec 1";
+deps_unmet {exec=>$^X."xxx"}, "exec 2";
 subtest 'exec in PATH' => sub {
-    plan skip_all => "currently only testing Unix"
-        unless $pp->os_type eq 'Unix';
-    my ($perl_dir, $perl_name) = $perl_path =~ m!(.+)/(.+)!;
+    plan skip_all => "currently only testing Unix (on Linux)"
+        unless $^O eq 'linux';
+    my ($perl_dir, $perl_name) = $^X =~ m!(.+)/(.+)!;
     local $ENV{PATH} = "$ENV{PATH}:$perl_dir";
     deps_met {exec=>$perl_name}, "exec in PATH";
 };
