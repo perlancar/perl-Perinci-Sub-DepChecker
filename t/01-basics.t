@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More 0.96;
 
-use Sub::Spec::DepChecker qw(check_deps);
+use Perinci::Sub::DepChecker qw(check_deps);
 
 sub test_check_deps {
     my %args = @_;
@@ -28,17 +28,7 @@ sub deps_unmet {
 
 deps_met   {}, "empty deps";
 
-deps_unmet {xxx=>1}, "unknown clause";
-
-deps_met   {mod=>"Test::More"}, "mod 1";
-deps_unmet {mod=>"Test::Morexxx"}, "mod 2";
-
-deps_met   {sub=>"Test::More::is"}, "sub 1";
-deps_unmet {sub=>"Test::Morexxx::is"}, "sub 2";
-deps_met   {sub=>"::test_check_deps"}, "sub: implicit main 1a";
-deps_unmet {sub=>"::xxx"}, "sub: implicit main 1b";
-deps_met   {sub=>"test_check_deps"}, "sub: implicit main 2a";
-deps_unmet {sub=>"xxx"}, "sub: implicit main 2b";
+deps_unmet {xxx=>1}, "unknown type";
 
 {
     local $ENV{A} = 1;
