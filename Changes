@@ -1,6 +1,6 @@
-Revision history for Perinci-Sub-DepChecker.
+Revision history for Perinci-Sub-DepChecker
 
-0.04	 2012-02-10 (not yet released)
+0.04	 2012-02-10
 
 	 Rename distribution from Sub-Spec-DepChecker to
 	 Perinci-Sub-DepChecker. Move Perinci-/Perl-specific dependency

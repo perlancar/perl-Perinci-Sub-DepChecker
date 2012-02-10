@@ -92,10 +92,11 @@ sub checkdep_exec {
 The 'deps' spec clause adds information about subroutine dependencies. This
 module performs check on it.
 
-This module is used by, for example, Perinci::Sub::Wrapper
+This module is mainly used by L<Perinci::Sub::Wrapper>.
+
 
 =head1 SEE ALSO
 
-L<Sub::Spec>
+L<Perinci>
 
 =cut
