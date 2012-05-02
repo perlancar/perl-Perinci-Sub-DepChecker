@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More 0.96;
 
-use Perinci::Sub::DepChecker qw(check_deps);
+use Perinci::Sub::DepChecker qw(check_deps dep_satisfy_rel);
 
 sub test_check_deps {
     my %args = @_;
@@ -92,9 +92,92 @@ deps_unmet {none=>[{}, {xxx=>1}]}, "none 2c";
 deps_unmet {none=>[{}, {}]}, "none 2d";
 
 deps_unmet {any =>[{all=>[{xxx=>1}, {}, {xxx=>1}]},
-                   {any=>[{xxx=>1}, {xxx=>1}, {xxx=>1}]}]}, "complex boolean 1b";
+                   {any=>[{xxx=>1}, {xxx=>1}, {xxx=>1}]}]},
+    "complex boolean 1b";
 deps_met   {none=>[{all=>[{xxx=>1}, {}, {xxx=>1}]},
-                   {any=>[{xxx=>1}, {xxx=>1}, {xxx=>1}]}]}, "complex boolean 1a";
+                   {any=>[{xxx=>1}, {xxx=>1}, {xxx=>1}]}]},
+    "complex boolean 1a";
+
+subtest 'dep_satisfy_rel' => sub {
+    my $c_no       = {b=>1};
+    my $c_must     = {a=>1};
+    my $c_must_not = {none=>[{a=>1}]};
+    my $c_might    = {any=>[{a=>1}, {b=>1}]};
+    my $c_imp      = {all=>[{a=>1}, {none=>[{a=>1}]}]};
+
+    is(dep_satisfy_rel(a => {}), "");
+    is(dep_satisfy_rel(a => $c_no), "");
+    is(dep_satisfy_rel(a => $c_must), "must");
+
+    is(dep_satisfy_rel(a => {all=>[]}), "");
+    is(dep_satisfy_rel(a => {all=>[$c_no]}), "");
+    is(dep_satisfy_rel(a => {all=>[$c_might]}), "might");
+    is(dep_satisfy_rel(a => {all=>[$c_must]}), "must");
+    is(dep_satisfy_rel(a => {all=>[$c_must_not]}), "must not");
+    is(dep_satisfy_rel(a => {all=>[$c_imp]}), "impossible");
+    is(dep_satisfy_rel(a => {all=>[{}, {}]}), "");
+    is(dep_satisfy_rel(a => {all=>[{}, $c_might]}), "might");
+    is(dep_satisfy_rel(a => {all=>[{}, $c_must]}), "must");
+    is(dep_satisfy_rel(a => {all=>[{}, $c_must_not]}), "must not");
+    is(dep_satisfy_rel(a => {all=>[{}, $c_imp]}), "impossible");
+    is(dep_satisfy_rel(a => {all=>[$c_might, $c_might]}), "might");
+    is(dep_satisfy_rel(a => {all=>[$c_might, $c_must]}), "must");
+    is(dep_satisfy_rel(a => {all=>[$c_might, $c_must_not]}), "must not");
+    is(dep_satisfy_rel(a => {all=>[$c_might, $c_imp]}), "impossible");
+    is(dep_satisfy_rel(a => {all=>[$c_must, $c_must]}), "must");
+    is(dep_satisfy_rel(a => {all=>[$c_must, $c_must_not]}), "impossible");
+    is(dep_satisfy_rel(a => {all=>[$c_must, $c_imp]}), "impossible");
+    is(dep_satisfy_rel(a => {all=>[$c_must_not, $c_must_not]}),"must not");
+    is(dep_satisfy_rel(a => {all=>[$c_must_not, $c_imp]}), "impossible");
+    is(dep_satisfy_rel(a => {all=>[$c_imp, $c_imp]}), "impossible");
+
+    is(dep_satisfy_rel(a => {any=>[]}), "");
+    is(dep_satisfy_rel(a => {any=>[$c_no]}), "");
+    is(dep_satisfy_rel(a => {any=>[$c_might]}), "might");
+    is(dep_satisfy_rel(a => {any=>[$c_must]}), "must");
+    is(dep_satisfy_rel(a => {any=>[$c_must_not]}), "must not");
+    is(dep_satisfy_rel(a => {any=>[$c_imp]}), "impossible");
+    is(dep_satisfy_rel(a => {any=>[{}, {}]}), "");
+    is(dep_satisfy_rel(a => {any=>[{}, $c_might]}), "might");
+    is(dep_satisfy_rel(a => {any=>[{}, $c_must]}), "might");
+    is(dep_satisfy_rel(a => {any=>[{}, $c_must_not]}), "might");
+    is(dep_satisfy_rel(a => {any=>[{}, $c_imp]}), "impossible");
+    is(dep_satisfy_rel(a => {any=>[$c_might, $c_might]}), "might");
+    is(dep_satisfy_rel(a => {any=>[$c_might, $c_must]}), "might");
+    is(dep_satisfy_rel(a => {any=>[$c_might, $c_must_not]}), "might");
+    is(dep_satisfy_rel(a => {any=>[$c_might, $c_imp]}), "impossible");
+    is(dep_satisfy_rel(a => {any=>[$c_must, $c_must]}), "must");
+    is(dep_satisfy_rel(a => {any=>[$c_must, $c_must_not]}), "might");
+    is(dep_satisfy_rel(a => {any=>[$c_must, $c_imp]}), "impossible");
+    is(dep_satisfy_rel(a => {any=>[$c_must_not, $c_must_not]}),"must not");
+    is(dep_satisfy_rel(a => {any=>[$c_must_not, $c_imp]}), "impossible");
+    is(dep_satisfy_rel(a => {any=>[$c_imp, $c_imp]}), "impossible");
+
+    is(dep_satisfy_rel(a => {none=>[]}), "");
+    is(dep_satisfy_rel(a => {none=>[$c_no]}), "");
+    is(dep_satisfy_rel(a => {none=>[$c_might]}), "might");
+    is(dep_satisfy_rel(a => {none=>[$c_must]}), "must not");
+    is(dep_satisfy_rel(a => {none=>[$c_must_not]}), "must");
+    is(dep_satisfy_rel(a => {none=>[$c_imp]}), "impossible");
+    is(dep_satisfy_rel(a => {none=>[{}, {}]}), "");
+    is(dep_satisfy_rel(a => {none=>[{}, $c_might]}), "might");
+    is(dep_satisfy_rel(a => {none=>[{}, $c_must]}), "must not");
+    is(dep_satisfy_rel(a => {none=>[{}, $c_must_not]}), "must");
+    is(dep_satisfy_rel(a => {none=>[{}, $c_imp]}), "impossible");
+    is(dep_satisfy_rel(a => {none=>[$c_might, $c_might]}), "might");
+    is(dep_satisfy_rel(a => {none=>[$c_might, $c_must]}), "must not");
+    is(dep_satisfy_rel(a => {none=>[$c_might, $c_must_not]}), "must");
+    is(dep_satisfy_rel(a => {none=>[$c_might, $c_imp]}), "impossible");
+    is(dep_satisfy_rel(a => {none=>[$c_must, $c_must]}), "must not");
+    is(dep_satisfy_rel(a => {none=>[$c_must, $c_must_not]}), "impossible");
+    is(dep_satisfy_rel(a => {none=>[$c_must, $c_imp]}), "impossible");
+    is(dep_satisfy_rel(a => {none=>[$c_must_not, $c_must_not]}), "must");
+    is(dep_satisfy_rel(a => {none=>[$c_must_not, $c_imp]}), "impossible");
+    is(dep_satisfy_rel(a => {none=>[$c_imp, $c_imp]}), "impossible");
+
+    is(dep_satisfy_rel(a => {a=>1, b=>1}), "must", "all dep searched");
+
+};
 
 done_testing();
 
