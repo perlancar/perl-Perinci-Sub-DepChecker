@@ -5,7 +5,11 @@ use strict;
 use warnings;
 use Test::More 0.96;
 
-use Perinci::Sub::DepChecker qw(check_deps dep_satisfy_rel);
+use Perinci::Sub::DepChecker qw(
+                                   check_deps
+                                   dep_satisfy_rel
+                                   list_mentioned_dep_clauses
+                           );
 
 sub test_check_deps {
     my %args = @_;
@@ -176,8 +180,11 @@ subtest 'dep_satisfy_rel' => sub {
     is(dep_satisfy_rel(a => {none=>[$c_imp, $c_imp]}), "impossible");
 
     is(dep_satisfy_rel(a => {a=>1, b=>1}), "must", "all dep searched");
-
 };
+
+is_deeply(list_mentioned_dep_clauses({any=>[{a=>1}, {a=>1, b=>2}]}),
+          [qw/any a b/],
+          "list_mentioned_dep_clauses");
 
 done_testing();
 

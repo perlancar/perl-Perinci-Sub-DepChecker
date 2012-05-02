@@ -7,7 +7,11 @@ use warnings;
 
 require Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT_OK = qw(check_deps dep_satisfy_rel);
+our @EXPORT_OK = qw(
+                       check_deps
+                       dep_satisfy_rel
+                       list_mentioned_dep_clauses
+               );
 
 # VERSION
 
@@ -135,6 +139,19 @@ sub dep_satisfy_rel {
     "";
 }
 
+sub list_mentioned_dep_clauses {
+    my ($deps, $res) = @_;
+    $res //= [];
+    for my $dname (keys %$deps) {
+        my $dval = $deps->{$dname};
+        push @$res, $dname unless $dname ~~ @$res;
+        if ($dname =~ /\A(?:all|any|none)\z/) {
+            list_mentioned_dep_clauses($_, $res) for @$dval;
+        }
+    }
+    $res;
+}
+
 1;
 # ABSTRACT: Check dependencies from 'deps' property
 
@@ -161,7 +178,7 @@ This module is currently mainly used by L<Perinci::Sub::Wrapper>.
 
 None is exported by default, but every function is exportable.
 
-=head2 check_deps($deps_clause) => ERRSTR
+=head2 check_deps($deps) => ERRSTR
 
 Check dependencies. Will in turn call various C<checkdep_NAME()> subroutines.
 Return empty string if all dependencies are met, or a string containing an error
@@ -186,16 +203,16 @@ To support a custom dependency named C<NAME>, just define C<checkdep_NAME>
 subroutine in L<Perinci::Sub::DepChecker> package which accepts a value and
 should return an empty string on success or an error message string.
 
-=head2 dep_satisfy_rel($name, $deps_clause) => STR
+=head2 dep_satisfy_rel($name, $deps) => STR
 
 Check dep satisfication relationship, i.e. whether dependency named C<$name>
-must be satisfied in C<$deps_clause>. Due to B<all>, B<any>, and B<none>
-clauses, this needs to be checked recursively and might yield an inconclusive
-answer ("maybe").
+must be satisfied in C<$deps>. Due to B<all>, B<any>, and B<none> clauses, this
+needs to be checked recursively and might yield an inconclusive answer
+("maybe").
 
-Return "must" if C<$name> definitely must be satisfied in C<$deps_clause>, "must
-not" if definitely not, "" if need not be satisfied (dep clause does not exist
-in deps), "impossible" if condition is impossible to be satisfied (due to
+Return "must" if C<$name> definitely must be satisfied in C<$deps>, "must not"
+if definitely not, "" if need not be satisfied (dep clause does not exist in
+deps), "impossible" if condition is impossible to be satisfied (due to
 conflicts), "might" if dep might need to be satisfied (but might also not).
 
 Examples:
@@ -211,6 +228,15 @@ Examples:
 
 This function is useful if we want to prepare something that "must" or "might"
 be needed, or want to avoid preparing something that "must not" be present.
+
+=head2 list_mentioned_dep_clauses($deps) => ARRAYREF
+
+List all dep clauses mentioned in $deps. The returned array is I<not> sorted
+alphabetically, so you will have to do it yourself if you need it sorted.
+
+Example:
+
+ list_mentioned_dep_clauses({any=>[{a=>1}, {b=>1}]}) # => [qw/any a b/]
 
 
 =head1 SEE ALSO
