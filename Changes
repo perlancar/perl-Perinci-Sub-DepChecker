@@ -1,5 +1,16 @@
 Revision history for Perinci-Sub-DepChecker
 
+0.05	 2012-05-02
+
+         [ENHANCEMENTS]
+
+         + Support 'prog' clause (new in Rinci 1.1.14), old 'exec' clause is
+         still supported for backward compatibility.
+
+         + Add utility functions: dep_satisfy_rel() and
+         list_mentioned_dep_clauses()
+
+
 0.04	 2012-02-10
 
 	 Rename distribution from Sub-Spec-DepChecker to
