@@ -84,6 +84,13 @@ sub checkdep_prog {
     "";
 }
 
+sub checkdep_undo_storage {
+    my ($cval) = @_;
+    # checking is done prior to calling function, by checking -undo_storage
+    # argument.
+    "";
+}
+
 # for backward-compatibility
 sub checkdep_exec { checkdep_prog(@_) }
 
