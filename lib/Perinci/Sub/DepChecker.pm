@@ -84,15 +84,20 @@ sub checkdep_prog {
     "";
 }
 
-sub checkdep_undo_storage {
-    my ($cval) = @_;
-    # checking is done prior to calling function, by checking -undo_storage
-    # argument.
-    "";
-}
-
 # for backward-compatibility
 sub checkdep_exec { checkdep_prog(@_) }
+
+# we check this dep by checking arguments, so we'll let something like
+# Perinci::Sub::Wrapper to do it
+sub checkdep_tmp_dir { "" }
+
+# we check this dep by checking arguments, so we'll let something like
+# Perinci::Sub::Wrapper to do it
+sub checkdep_trash_dir { "" }
+
+# we check this dep by checking arguments, so we'll let something like
+# Perinci::Sub::Wrapper to do it
+sub checkdep_undo_trash_dir { "" }
 
 sub _all_elems_is {
     my ($ary, $el) = @_;
