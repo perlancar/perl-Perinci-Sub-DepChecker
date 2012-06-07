@@ -1,5 +1,11 @@
 Revision history for Perinci-Sub-DepChecker
 
+0.06	 2012-06-07
+
+         Update to Rinci 1.1.18 (remove 'undo_storage' clause, add 'tmp_dir',
+         'trash_dir', 'undo_trash_dir').
+
+
 0.05	 2012-05-02
 
          [ENHANCEMENTS]
