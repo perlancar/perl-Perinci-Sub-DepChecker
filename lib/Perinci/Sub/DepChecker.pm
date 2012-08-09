@@ -20,8 +20,12 @@ sub check_deps {
     #say "D:check: ", dump($val);
     for my $dname (keys %$val) {
         my $dval = $val->{$dname};
-        return "Unknown dependency type: $dname"
-            unless defined &{"checkdep_$dname"};
+        unless (defined &{"checkdep_$dname"}) {
+            # give a chance to load from a module first
+            eval { require "Perinci/Sub/Dep/$dname.pm" };
+            return "Unknown dependency type: $dname"
+                unless defined &{"checkdep_$dname"};
+        }
         my $check = \&{"checkdep_$dname"};
         my $res = $check->($dval);
         if ($res) {
