@@ -82,8 +82,9 @@ sub checkdep_prog {
         return "Program $cval not executable" unless (-x $cval);
     } else {
         require File::Which;
-        return "Program $cval not found in PATH"
-            unless File::Which::which($cval);
+        return "Program $cval not found in PATH (".
+            join(":", File::Spec->path).")"
+                unless File::Which::which($cval);
     }
     "";
 }
