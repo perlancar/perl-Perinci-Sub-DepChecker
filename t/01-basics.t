@@ -3,7 +3,7 @@
 use 5.010;
 use strict;
 use warnings;
-use Test::More 0.96;
+use Test::More 0.98;
 
 use Perinci::Sub::DepChecker qw(
                                    check_deps
@@ -187,4 +187,3 @@ is_deeply(list_mentioned_dep_clauses({any=>[{a=>1}, {a=>1, b=>2}]}),
           "list_mentioned_dep_clauses");
 
 done_testing();
-
