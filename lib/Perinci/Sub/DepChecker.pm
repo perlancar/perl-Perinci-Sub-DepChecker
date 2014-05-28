@@ -15,6 +15,9 @@ our @EXPORT_OK = qw(
                );
 
 # VERSION
+# DATE
+
+my $pa;
 
 sub check_deps {
     my ($val) = @_;
@@ -87,6 +90,31 @@ sub checkdep_prog {
             join(":", File::Spec->path).")"
                 unless File::Which::which($cval);
     }
+    "";
+}
+
+sub _pa {
+    return $pa if $pa;
+    require Perinci::Access;
+    $pa = Perinci::Access->new;
+    $pa;
+}
+
+sub checkdep_pkg {
+    my ($cval) = @_;
+    my $res = _pa->request(info => $cval);
+    $res->[0] == 200 or return "Can't perform 'info' Riap request on '$cval': ".
+        "$res->[0] $res->[1]";
+    $res->[2]{type} eq 'package' or return "$cval is not a Riap package";
+    "";
+}
+
+sub checkdep_func {
+    my ($cval) = @_;
+    my $res = _pa->request(info => $cval);
+    $res->[0] == 200 or return "Can't perform 'info' Riap request on '$cval': ".
+        "$res->[0] $res->[1]";
+    $res->[2]{type} eq 'function' or return "$cval is not a Riap function";
     "";
 }
 

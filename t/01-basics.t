@@ -186,4 +186,18 @@ is_deeply(list_mentioned_dep_clauses({any=>[{a=>1}, {a=>1, b=>2}]}),
           [qw/any a b/],
           "list_mentioned_dep_clauses");
 
+subtest "dep: pkg & func" => sub {
+    eval { require Perinci::Access };
+    plan skip_all => 'Perinci::Access not available' if $@;
+    eval { require Perinci::Examples };
+    plan skip_all => 'Perinci::Examples not available' if $@;
+    deps_met   {pkg =>'/Perinci/Examples/'}, "pkg";
+    deps_unmet {pkg =>'/Perinci/Examples'}, "not pkg";
+    deps_unmet {pkg =>'/Foo'}, "pkg not found";
+    deps_met   {func=>'/Perinci/Examples/gen_array'}, "func";
+    deps_unmet {func=>'/Perinci/Examples/'}, "not func";
+    deps_unmet {func=>'/Perinci/Examples/foo'}, "func not found";
+};
+
+DONE_TESTING:
 done_testing();
