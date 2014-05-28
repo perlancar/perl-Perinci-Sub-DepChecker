@@ -201,6 +201,8 @@ sub list_mentioned_dep_clauses {
 1;
 # ABSTRACT: Check dependencies from 'deps' property
 
+=for Pod::Coverage ^(checkdep_.*)$
+
 =head1 SYNOPSIS
 
  use Perinci::Spec::DepChecker qw(check_deps dep_must_be_satisfied);

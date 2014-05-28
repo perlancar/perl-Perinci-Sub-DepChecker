@@ -1,5 +1,10 @@
 Revision history for Perinci-Sub-DepChecker
 
+0.10	 2014-05-28 (SHARYANTO)
+
+         - Implement pkg & func (Rinci 1.1.48).
+
+
 0.09	 2013-11-20 (SHARYANTO)
 
          - No functional changes. Add 'use experimental smartmatch' for perl
