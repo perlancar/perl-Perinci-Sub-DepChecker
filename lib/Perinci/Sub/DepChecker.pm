@@ -93,7 +93,7 @@ sub checkdep_prog {
     "";
 }
 
-sub _pa {
+sub riap_client {
     return $pa if $pa;
     require Perinci::Access;
     $pa = Perinci::Access->new;
@@ -102,7 +102,7 @@ sub _pa {
 
 sub checkdep_pkg {
     my ($cval) = @_;
-    my $res = _pa->request(info => $cval);
+    my $res = riap_client->request(info => $cval);
     $res->[0] == 200 or return "Can't perform 'info' Riap request on '$cval': ".
         "$res->[0] $res->[1]";
     $res->[2]{type} eq 'package' or return "$cval is not a Riap package";
@@ -111,7 +111,7 @@ sub checkdep_pkg {
 
 sub checkdep_func {
     my ($cval) = @_;
-    my $res = _pa->request(info => $cval);
+    my $res = riap_client->request(info => $cval);
     $res->[0] == 200 or return "Can't perform 'info' Riap request on '$cval': ".
         "$res->[0] $res->[1]";
     $res->[2]{type} eq 'function' or return "$cval is not a Riap function";
@@ -201,7 +201,7 @@ sub list_mentioned_dep_clauses {
 1;
 # ABSTRACT: Check dependencies from 'deps' property
 
-=for Pod::Coverage ^(checkdep_.*)$
+=for Pod::Coverage ^(checkdep_.*|riap_client)$
 
 =head1 SYNOPSIS
 
