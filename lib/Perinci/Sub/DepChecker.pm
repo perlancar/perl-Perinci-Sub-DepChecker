@@ -205,7 +205,7 @@ sub list_mentioned_dep_clauses {
 
 =head1 SYNOPSIS
 
- use Perinci::Spec::DepChecker qw(check_deps dep_must_be_satisfied);
+ use Perinci::Spec::DepChecker qw(check_deps dep_satisfy_rel list_mentioned_dep_clauses);
 
  my $err = check_deps($meta->{deps});
  print "Dependencies not met: $err" if $err;
