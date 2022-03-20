@@ -28,7 +28,7 @@ sub check_deps {
         my $dval = $val->{$dname};
         unless (defined &{"checkdep_$dname"}) {
             # give a chance to load from a module first
-            eval { require "Perinci/Sub/Dep/$dname.pm" };
+            eval { my $mod_pm = "Perinci/Sub/Dep/$dname.pm"; require $mod_pm };
             return "Unknown dependency type: $dname"
                 unless defined &{"checkdep_$dname"};
         }

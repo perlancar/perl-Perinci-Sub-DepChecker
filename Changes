@@ -1,3 +1,9 @@
+0.12    2022-03-20  Released-By: PERLANCAR; Urgency: medium
+
+        - Implement version checking for 'prog' (currently only for 'git')
+          (ref: Rinci 1.1.101).
+
+
 0.11    2015-09-03  Released-By: PERLANCAR
 
 	- No functional changes.
