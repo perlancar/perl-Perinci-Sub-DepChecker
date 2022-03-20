@@ -1,3 +1,10 @@
+0.121   2022-03-20  Released-By: PERLANCAR; Urgency: low
+
+        - No functional changes.
+
+        - Switch versioning scheme from x.yy to x.yyy.
+
+
 0.12    2022-03-20  Released-By: PERLANCAR; Urgency: medium
 
         - Implement version checking for 'prog' (currently only for 'git')
