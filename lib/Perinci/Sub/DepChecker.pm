@@ -4,7 +4,7 @@ use 5.010001;
 use strict;
 use warnings;
 use experimental 'smartmatch';
-#use Log::Any '$log';
+use Log::ger;
 
 require Exporter;
 our @ISA = qw(Exporter);
@@ -14,8 +14,10 @@ our @EXPORT_OK = qw(
                        list_mentioned_dep_clauses
                );
 
-# VERSION
+# AUTHORITY
 # DATE
+# DIST
+# VERSION
 
 my $pa;
 
@@ -82,14 +84,35 @@ sub checkdep_code {
 sub checkdep_prog {
     my ($cval) = @_;
 
-    if ($cval =~ m!/!) {
-        return "Program $cval not executable" unless (-x $cval);
+    $cval = ref $cval eq 'HASH' ? $cval : {name=>$cval};
+    my $prog_name = $cval->{name} or return "BUG: Program name not specified in dependency";
+
+    if ($prog_name =~ m!/!) {
+        return "Program $prog_name not executable" unless (-x $prog_name);
     } else {
         require File::Which;
-        return "Program $cval not found in PATH (".
+        return "Program $prog_name not found in PATH (".
             join(":", File::Spec->path).")"
-                unless File::Which::which($cval);
+                unless File::Which::which($prog_name);
     }
+
+    if (defined $cval->{min_version}) {
+        require IPC::System::Options;
+        require Version::Util;
+
+        if ($prog_name eq 'git') {
+            my $ver = IPC::System::Options::readpipe({log=>1}, "git --version");
+            my ($exit_code, $signal, $core_dump) = ($? < 0 ? $? : $? >> 8, $? & 127, $? & 128);
+            return "ERR: Cannot check git version with 'git --version': exit_code=$exit_code"
+                if $exit_code;
+            ($ver) = $ver =~ /git version (.+)/ or return "ERR: Cannot extract version from response '$ver'";
+            return "git version ($) is less than required ($cval->{min_version})"
+                if Version::Util::version_lt($ver, $cval->{min_version});
+        } else {
+            return "ERR: Cannot check minimum version for program '$prog_name'";
+        }
+    }
+
     "";
 }
 
