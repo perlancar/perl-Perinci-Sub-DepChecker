@@ -47,13 +47,24 @@ deps_met   {code=>sub{1}}, "sub 1";
 deps_unmet {code=>sub{ }}, "sub 2";
 
 deps_met   {exec=>$^X}, "exec 1";
+deps_met   {exec=>$^X}, "exec 1";
 deps_unmet {exec=>$^X."xxx"}, "exec 2";
 subtest 'exec in PATH' => sub {
     plan skip_all => "currently only testing Unix (on Linux)"
         unless $^O eq 'linux';
     my ($perl_dir, $perl_name) = $^X =~ m!(.+)/(.+)!;
+    plan skip_all => "currently only testing prog named 'perl'"
+        unless $perl_name eq 'perl';
     local $ENV{PATH} = "$ENV{PATH}:$perl_dir";
-    deps_met {exec=>$perl_name}, "exec in PATH";
+    deps_met {exec=>$perl_name}, "perl (str)";
+
+    # hash form
+    deps_met {exec=>{name=>$perl_name}}, "perl (hash)";
+
+    # min_version
+    deps_met   {exec=>{name=>'perl', min_version=>$]}}, "min_version 1";
+    deps_unmet {exec=>{name=>'perl', min_version=>'9.999'}}, "min_version 2";
+
 };
 
 # perl's caching defeats this?
