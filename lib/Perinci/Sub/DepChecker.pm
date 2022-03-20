@@ -116,7 +116,7 @@ sub checkdep_prog {
         return "ERR: Cannot check version with '$ver_cmd': exit_code=$exit_code"
             if $exit_code;
         ($ver) = $ver_extract->($ver) or return "ERR: Cannot extract version from response '$ver'";
-        return "Program '$prog_name' version ($) is less than required ($cval->{min_version})"
+        return "Program '$prog_name' version ($ver) is less than required ($cval->{min_version})"
             if Version::Util::version_lt($ver, $cval->{min_version});
     }
 
