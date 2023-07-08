@@ -3,7 +3,6 @@ package Perinci::Sub::DepChecker;
 use 5.010001;
 use strict;
 use warnings;
-use experimental 'smartmatch';
 use Log::ger;
 
 require Exporter;
@@ -186,16 +185,16 @@ sub dep_satisfy_rel {
             my @r = map { dep_satisfy_rel($wanted, $_) } @$dval;
             #$log->tracef("all: %s", \@r);
             next unless @r;
-            return "impossible" if "impossible" ~~ @r;
-            return "impossible" if "must" ~~ @r && "must not" ~~ @r;
-            return "must"       if "must" ~~ @r;
-            return "must not"   if "must not" ~~ @r;
+            return "impossible" if grep { $_ eq "impossible" } @r;
+            return "impossible" if (grep { $_ eq "must" } @r) && (grep {$_ eq "must not"} @r);
+            return "must"       if grep { $_ eq "must" } @r;
+            return "must not"   if grep { $_ eq "must not" } @r;
             return "might"      if _all_nonblank_elems_is(\@r, "might");
         } elsif ($dname eq 'any') {
             my @r = map { dep_satisfy_rel($wanted, $_) } @$dval;
             #$log->tracef("any: %s", \@r);
             next unless @r;
-            return "impossible" if "impossible" ~~ @r;
+            return "impossible" if grep { $_ eq "impossible" } @r;
             return "must"       if _all_elems_is(\@r, "must");
             return "must not"   if _all_elems_is(\@r, "must not");
             next                if _all_elems_is(\@r, "");
@@ -204,10 +203,10 @@ sub dep_satisfy_rel {
             my @r = map { dep_satisfy_rel($wanted, $_) } @$dval;
             #$log->tracef("none: %s", \@r);
             next unless @r;
-            return "impossible" if "impossible" ~~ @r;
-            return "impossible" if "must" ~~ @r && "must not" ~~ @r;
-            return "must not"   if "must" ~~ @r;
-            return "must"       if "must not" ~~ @r;
+            return "impossible" if grep { $_ eq "impossible" } @r;
+            return "impossible" if (grep { $_ eq "must" } @r) && (grep {$_ eq "must not"} @r);
+            return "must not"   if grep { $_ eq "must" } @r;
+            return "must"       if grep { $_ eq "must not" } @r;
             return "might"      if _all_nonblank_elems_is(\@r, "might");
         } else {
             return "must" if $dname eq $wanted;
@@ -221,7 +220,7 @@ sub list_mentioned_dep_clauses {
     $res //= [];
     for my $dname (keys %$deps) {
         my $dval = $deps->{$dname};
-        push @$res, $dname unless $dname ~~ @$res;
+        push @$res, $dname unless grep { $_ eq $dname } @$res;
         if ($dname =~ /\A(?:all|any|none)\z/) {
             list_mentioned_dep_clauses($_, $res) for @$dval;
         }
