@@ -1,3 +1,9 @@
+0.127   2023-11-09  Released-By: PERLANCAR; Urgency: medium
+
+        - Bump prereq version Version::Util -> 0.732 to see erroneous
+          version number in error message.
+
+
 0.126   2023-07-08  Released-By: PERLANCAR; Urgency: low
 
         - No functional changes.
