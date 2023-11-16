@@ -106,7 +106,7 @@ sub checkdep_prog {
             $ver_extract = sub { $_[0] =~ /git version (.+)/ ? $1 : undef };
         } elsif ($prog_name eq 'perl') {
             @ver_cmd = ($prog_path, "-v");
-            $ver_extract = sub { $_[0] =~ /\(v(.+?)\)/ ? $1 : undef };
+            $ver_extract = sub { $_[0] =~ /\s\(?v([\.\d]+)\*?\)?\s/ ? $1 : undef };
         } else {
             return "ERR: Cannot check minimum version for program '$prog_name'";
         }
